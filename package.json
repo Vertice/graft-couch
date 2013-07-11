@@ -1,0 +1,27 @@
+{
+  "name": "graft-couch",
+  "version": "0.0.1",
+  "description": "couchdb data access layer for graft.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ONCHoldings/graft-couch.git"
+  },
+  "author": "Adrian Rossouw",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ONCHoldings/graft-couch/issues"
+  },
+  "devDependencies": {
+    "graftjs": "~0.0.1",
+    "mocha": "~1.12.0",
+    "should": "~1.2.2"
+  },
+  "dependencies": {
+    "Nonsense": "~0.1.2",
+    "debug": "~0.7.2"
+  }
+}
