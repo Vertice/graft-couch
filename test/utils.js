@@ -1,4 +1,6 @@
 var request = require('request');
+var Couch = require('../lib/couch.js');
+var _ = require('underscore');
 var testUrl = 'http://localhost:';
 
 function parseBody() {
@@ -25,7 +27,24 @@ function requestUrl(port, pathname, method, body) {
     }
 }
 
+// Set up database, populate with design documents.
+var install = function(config, options, callback) {
+    var db = new Couch(config);
+    if (_(options).isFunction()) {
+        callback = options;
+        options = {};
+    }
+    options = _(options || {}).defaults({
+        doc: __dirname + '/backbone.json'
+    });
+    db.dbPut(function(err) {
+        if (err) return callback(err);
+        db.putDesignDocs([options.doc], callback);
+    });
+};
+
 module.exports = {
     parseBody: parseBody,
-    requestUrl: requestUrl
+    requestUrl: requestUrl,
+    install: install
 };

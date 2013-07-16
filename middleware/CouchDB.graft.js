@@ -4,6 +4,7 @@ var request = require('request');
 var url = require('url');
 var _ = require('underscore');
 var Couch = require('../lib/couch.js');
+var crypto = require('crypto');
 var Errors = {
     NOT_FOUND: {
         status: 404,
@@ -40,9 +41,22 @@ function getUrl(model, id) {
 }
 
 _.extend(this, {
-    readModel: function readModel(model, id) {
+    readModel: function(model, id) {
         // console.log('readModel :', model, id);
         return promisify(this.couch.get, getUrl(model, id));
+    },
+    createModel: function(model, data) {
+        // console.log('createModel :', model, data);
+        
+        if(data.id == undefined)
+            data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
+
+        var _doc = {
+            _id: getUrl(model) + '/' + data.id
+        }
+        _.extend(_doc, data);
+
+        return promisify(this.couch.post, _doc);
     },
     updateModel: function readModel(model, id, data) {
         // debug('updateModel :', model, id);
@@ -52,14 +66,6 @@ _.extend(this, {
         _.extend(_doc, data);
 
         return promisify(this.couch.put, _doc);
-    },
-    createModel: function(model, data) {
-        console.log('createModel :', model, data);
-        var _doc = {
-        }
-        _.extend(_doc, data);
-
-        return promisify(this.couch.post, _doc);
     },
     deleteModel: function(model, id) {
         var dfr = new $.Deferred();
