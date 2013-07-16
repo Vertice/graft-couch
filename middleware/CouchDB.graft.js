@@ -46,7 +46,7 @@ _.extend(this, {
         return promisify(this.couch.get, getUrl(model, id));
     },
     createModel: function(model, data) {
-        // console.log('createModel :', model, data);
+        console.log('createModel :', model, data);
         
         if(data.id == undefined)
             data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
@@ -58,7 +58,8 @@ _.extend(this, {
 
         return promisify(this.couch.post, _doc);
     },
-    updateModel: function readModel(model, id, data) {
+    updateModel: function (model, id, data) {
+        console.log('updateModel :', model, id, data);
         // debug('updateModel :', model, id);
         var _doc = {
             _id : getUrl(model, id)
@@ -68,17 +69,9 @@ _.extend(this, {
         return promisify(this.couch.put, _doc);
     },
     deleteModel: function(model, id) {
-        var dfr = new $.Deferred();
-
-        function deleteModel(m) {
-            var ind = _(this.testData[model]).indexOf(m);
-            this.testData[model].splice(ind, 1);
-
-            dfr.resolve(204);
-        }
-
-        this.findModel(model, id).then(_.bind(deleteModel, this), dfr.reject);
-        return dfr.promise();
+        console.log('deleteModel :', model, id);
+        var doc = this.readModel(model, id);
+        return promisify(this.couch.delete, getUrl(model, doc));
     },
     readCollection: function readModel(col) {
         debug('read collection ' + col);
