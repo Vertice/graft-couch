@@ -2,9 +2,10 @@ var should = require('should');
 var request = require('request');
 var utils = require('./utils');
 var Couch = require('../lib/couch.js');
-var testPort = 12400;
+var testPort = 12500;
 var dbName = 'ws_mocks';
 var dbConfig = {pathname: dbName};
+var serverConfig = {db: dbName, port: testPort};
 var newId = '';
 
 // TODO maybe move this to 'before' script
@@ -15,7 +16,7 @@ var Graft = require('graftjs/server');
 require('graftjs/middleware/REST.graft.js');
 require('../middleware/CouchDB.graft.js');
 Graft.load(__dirname);
-Graft.start({db: dbName});
+Graft.start(serverConfig);
 
 
 function cleanup(done) {
