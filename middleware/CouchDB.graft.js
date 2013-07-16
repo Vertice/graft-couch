@@ -4,7 +4,12 @@ var request = require('request');
 var url = require('url');
 var _ = require('underscore');
 var Couch = require('../lib/couch.js');
-
+var Errors = {
+    NOT_FOUND: {
+        status: 404,
+        message: "There is no such page"
+    }
+};
 
 function promisify(fn) {
     var dfr = new $.Deferred();
@@ -21,11 +26,12 @@ function promisify(fn) {
     var fn = args.shift();
     args.push(cb);
 
-    console.log(args);
+    // console.log(args);
     fn.apply(this, args); 
 
     return dfr.promise();
 }
+
 
 function getUrl(model, id) {
     if (!id) { return '/api/' + model; }
@@ -35,11 +41,11 @@ function getUrl(model, id) {
 
 _.extend(this, {
     readModel: function readModel(model, id) {
-        debug('readModel :', model);
+        // console.log('readModel :', model, id);
         return promisify(this.couch.get, getUrl(model, id));
     },
     updateModel: function readModel(model, id, data) {
-        debug('updateModel :', model, id);
+        // debug('updateModel :', model, id);
         var _doc = {
             _id : getUrl(model, id)
         }
@@ -48,12 +54,12 @@ _.extend(this, {
         return promisify(this.couch.put, _doc);
     },
     createModel: function(model, data) {
-        debug('createModel :', model, data);
+        console.log('createModel :', model, data);
         var _doc = {
         }
         _.extend(_doc, data);
 
-        return promisify(this.couch.put, _doc);
+        return promisify(this.couch.post, _doc);
     },
     deleteModel: function(model, id) {
         var dfr = new $.Deferred();
@@ -77,16 +83,16 @@ _.extend(this, {
 });
 
 this.addInitializer(function(opts) {
+    // console.log("addInitializer : ", opts);
     var opts = opts || {};
 
     this.couch = new Couch({
         pathname: opts.db || '/graft'
     });
-
-
 });
 
 this.addInitializer(function(opts) {
+    // console.log("addInitializer adding handlers");
     debug("adding handler for reading models");
     Graft.reqres.setHandler('model:read', this.readModel, this);
     Graft.reqres.setHandler('model:update', this.updateModel, this);
@@ -94,4 +100,3 @@ this.addInitializer(function(opts) {
     Graft.reqres.setHandler('model:delete', this.deleteModel, this);
     Graft.reqres.setHandler('collection:read', this.readCollection, this);
 });
-
