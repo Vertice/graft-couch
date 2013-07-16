@@ -8,10 +8,6 @@ var dbConfig = {pathname: dbName};
 var serverConfig = {db: dbName, port: testPort};
 var newId = '';
 
-// TODO maybe move this to 'before' script
-// before script must create couch db and maybe create some new docs there
-// after script must remove couchdb
-// all test must be independent (don't use results of previous test in next one!)
 var Graft = require('graftjs/server');
 require('graftjs/middleware/REST.graft.js');
 require('../middleware/CouchDB.graft.js');
