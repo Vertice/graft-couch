@@ -54,7 +54,7 @@ _.extend(this, {
         }
         _.extend(_doc, data);
 
-        return promisify(this.couch.put, _doc);
+        return promisify(this.couch.post, _doc);
     },
     updateModel: function (model, id, data) {
         // console.log('updateModel :', model, id, data);

@@ -27,7 +27,7 @@ describe('install', function() {
     var db = new Couch(dbConfig);
 
     before(cleanup.bind(db));
-    // after(cleanup.bind(db));
+    after(cleanup.bind(db));
 
     it('should install the database', function(done) {
     	utils.install(dbConfig, done);
