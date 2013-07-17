@@ -27,7 +27,7 @@ describe('install', function() {
     var db = new Couch(dbConfig);
 
     before(cleanup.bind(db));
-    after(cleanup.bind(db));
+    // after(cleanup.bind(db));
 
     it('should install the database', function(done) {
     	utils.install(dbConfig, done);
@@ -58,10 +58,12 @@ describe('install', function() {
 });
 
 describe('Reading model', function() {
-	describe('Install DB', function() {
 		var db = new Couch(dbConfig);
 
 	    before(cleanup.bind(db));
+	    after(cleanup.bind(db));
+
+	describe('Install DB', function() {
 
 	    it('should install the database', function(done) {
 	    	utils.install(dbConfig, done);
@@ -71,8 +73,8 @@ describe('Reading model', function() {
 	describe('POST /api/Mock', function() {
 		var doc = {
 			"id": 'one',
-			"someVal": "Ronald McDonald", // was "Emily Baker"
-            "favColor": "yello" // new field
+			"someVal": "Ronald McDonald",
+            "favColor": "yello"
 		};
 		before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
 
@@ -114,18 +116,15 @@ describe('Reading model', function() {
             this.body.should.have.property('id', 'one');
         });
 
+        it('should have the correct someVal', function() {
+            this.body.should.have.property('someVal', 'Ronald McDonald');
+        });
+
         it ('should respect the default values', function() {
             this.body.should.have.property('name', 'name');
         });
 	});
 
-	describe('destroy DB', function() {
-		var db = new Couch(dbConfig);
-
-	    it('should delete the database', function(done) {
-	        db.dbDel(done);
-	    });
-	});
 });
 
 // describe('Delete model', function() {

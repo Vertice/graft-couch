@@ -27,7 +27,6 @@ function promisify(fn) {
     var fn = args.shift();
     args.push(cb);
 
-    // console.log(args);
     fn.apply(this, args); 
 
     return dfr.promise();
@@ -46,8 +45,7 @@ _.extend(this, {
         return promisify(this.couch.get, getUrl(model, id));
     },
     createModel: function(model, data) {
-        console.log('createModel :', model, data);
-        
+        // console.log('createModel :', model, data);
         if(data.id == undefined)
             data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
 
@@ -56,11 +54,10 @@ _.extend(this, {
         }
         _.extend(_doc, data);
 
-        return promisify(this.couch.post, _doc);
+        return promisify(this.couch.put, _doc);
     },
     updateModel: function (model, id, data) {
-        console.log('updateModel :', model, id, data);
-        // debug('updateModel :', model, id);
+        // console.log('updateModel :', model, id, data);
         var _doc = {
             _id : getUrl(model, id)
         }
@@ -69,11 +66,12 @@ _.extend(this, {
         return promisify(this.couch.put, _doc);
     },
     deleteModel: function(model, id) {
-        console.log('deleteModel :', model, id);
+        // console.log('deleteModel :', model, id);
         var doc = this.readModel(model, id);
         return promisify(this.couch.delete, getUrl(model, doc));
     },
-    readCollection: function readModel(col) {
+    readCollection: function(col) {
+        // console.log('readCollection');
         debug('read collection ' + col);
         var dfr = new $.Deferred();
         this.testData[col] ? dfr.resolve(this.testData[col]) : dfr.reject(404);
@@ -94,8 +92,8 @@ this.addInitializer(function(opts) {
     // console.log("addInitializer adding handlers");
     debug("adding handler for reading models");
     Graft.reqres.setHandler('model:read', this.readModel, this);
-    Graft.reqres.setHandler('model:update', this.updateModel, this);
     Graft.reqres.setHandler('model:create', this.createModel, this);
+    Graft.reqres.setHandler('model:update', this.updateModel, this);
     Graft.reqres.setHandler('model:delete', this.deleteModel, this);
     Graft.reqres.setHandler('collection:read', this.readCollection, this);
 });
