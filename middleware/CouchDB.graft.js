@@ -41,11 +41,16 @@ function getUrl(model, id) {
 
 _.extend(this, {
     readModel: function(model, id) {
-        // console.log('readModel :', model, id);
-        return promisify(this.couch.get, getUrl(model, id));
+        var dfr = new $.Deferred();
+
+        this.couch.get(getUrl(model, id), function(err, doc) {
+            if (err) return dfr.reject(404);
+            dfr.resolve(doc);
+        });
+
+        return dfr.promise();
     },
     createModel: function(model, data) {
-        // console.log('createModel :', model, data);
         if(data.id == undefined)
             data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
 
@@ -57,7 +62,6 @@ _.extend(this, {
         return promisify(this.couch.post, _doc);
     },
     updateModel: function (model, id, data) {
-        // console.log('updateModel :', model, id, data);
         var _doc = {
             _id : getUrl(model, id)
         }
@@ -66,9 +70,16 @@ _.extend(this, {
         return promisify(this.couch.put, _doc);
     },
     deleteModel: function(model, id) {
-        // console.log('deleteModel :', model, id);
-        var doc = this.readModel(model, id);
-        return promisify(this.couch.delete, getUrl(model, doc));
+        var dfr = new $.Deferred();
+        var that = this;
+
+        this.couch.get(getUrl(model, id), function(err, doc) {
+            if (err) return dfr.reject(404);
+            that.couch.del(doc, function(err, res) {
+                err ? dfr.reject(404) : dfr.resolve({});
+            })
+        });
+        return dfr.promise();
     },
     readCollection: function(col) {
         var dfr = new $.Deferred();
