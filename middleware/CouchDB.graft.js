@@ -71,10 +71,16 @@ _.extend(this, {
         return promisify(this.couch.delete, getUrl(model, doc));
     },
     readCollection: function(col) {
-        // console.log('readCollection');
-        debug('read collection ' + col);
         var dfr = new $.Deferred();
-        this.testData[col] ? dfr.resolve(this.testData[col]) : dfr.reject(404);
+        var url = '_design/backbone/_rewrite' + getUrl(col);
+        this.couch.view(url, {}, function(err, res) {
+            if (err) return dfr.reject(404);
+            var data = [];
+            _.each(res.rows, function(val) {
+                data.push(val.doc);
+            });
+            dfr.resolve(data);
+        });
         return dfr.promise();
     }
 });

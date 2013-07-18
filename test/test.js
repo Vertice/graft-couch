@@ -245,34 +245,85 @@ describe('Updating model', function() {
             this.body.should.have.property('someVal', 'Emily Mortimer');
         });
     });
-    // describe('GET /api/Account', function() {
-    //     before(utils.requestUrl(testPort, '/api/Account'));
-    //     it ('should return status 200', function() {
-    //         this.resp.should.have.status(200);
-    //     });
+    describe('GET /api/Mock', function() {
+        before(utils.requestUrl(testPort, '/api/Mock'));
+        it ('should return status 200', function() {
+            this.resp.should.have.status(200);
+        });
 
-    //     it('response should be json', function() {
-    //         this.resp.should.be.json;
-    //     });
+        it('response should be json', function() {
+            this.resp.should.be.json;
+        });
 
-    //     it ('should have a body', function() {
-    //         should.exist(this.body);
-    //     });
+        it ('should have a body', function() {
+            should.exist(this.body);
+        });
         
-    //     it ('should not have changed fields not touched', function() {
-    //         this.body[2].should.have.property('group', 'default');
-    //     });
-
-    //     it ('should have added a field', function() {
-    //         this.body[2].should.have.property('favColor', 'magenta');
-    //     });
+        it ('should have added a field', function() {
+            this.body[0].should.have.property('favColor', 'magenta');
+        });
 
 
-    //     it ('should return the changed object in listing', function() {
-    //         this.body[2].should.have.property('name', 'Emily Mortimer');
-    //     });
-    // });
+        it ('should return the changed object in listing', function() {
+            this.body[0].should.have.property('someVal', 'Emily Mortimer');
+        });
+    });
 });
+
+//get collection
+// describe('POST /api/Mock', function() {
+// 	var doc = {
+// 		"id": 'two',
+// 		"someVal": "Some text",
+//         "favColor": "red"
+// 	};
+// 	before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
+
+// 	// This is for the new location the server told us to go.
+//     it ('should have a location', function() {
+//         this.resp.should.have.header('Location');
+//     });
+
+//     it ('should return status 303', function() {
+//         this.resp.should.have.status(303);
+//     });
+
+//     it('response should be json', function() {
+//         this.resp.should.be.json;
+//     });
+
+//     it ('should have a body', function() {
+//         should.exist(this.body);
+//     });
+// });
+
+// describe('GET /api/Mock/two', function() {
+// 		before(utils.requestUrl(testPort, '/api/Mock/two'));
+
+// 		it ('should return status 200', function() {
+//             this.resp.should.have.status(200);
+//         });
+
+//         it('response should be json', function() {
+//             this.resp.should.be.json;
+//         });
+
+//         it ('should have a body', function() {
+//             should.exist(this.body);
+//         });
+
+//         it('should have the correct id', function() {
+//             this.body.should.have.property('id', 'two');
+//         });
+
+//         it('should have the correct someVal', function() {
+//             this.body.should.have.property('someVal', 'Some text');
+//         });
+
+//         it ('should respect the default values', function() {
+//             this.body.should.have.property('name', 'name');
+//         });
+// 	});
 
 // describe('Delete model', function() {
 
