@@ -8,7 +8,6 @@ var testPort = 12500;
 var dbName = 'ws_mocks';
 var dbConfig = {pathname: dbName};
 var serverConfig = {db: dbName, port: testPort};
-var newId = '';
 
 var Graft = require('graftjs/server');
 require('graftjs/middleware/REST.graft.js');
@@ -32,7 +31,7 @@ describe('install', function() {
     after(cleanup.bind(db));
 
     it('should install the database', function(done) {
-    	utils.install(dbConfig, done);
+        utils.install(dbConfig, done);
     });
 
     it('check that database exists', function(done) {
@@ -61,26 +60,26 @@ describe('install', function() {
 
 describe('Creating model', function(){
 
-	var db = new Couch(dbConfig);
+    var db = new Couch(dbConfig);
 
     before(cleanup.bind(db));
     after(cleanup.bind(db));
 
-	describe('Install DB', function() {
+    describe('Install DB', function() {
 
-	    it('should install the database', function(done) {
-	    	utils.install(dbConfig, done);
-	    });
-	});
+        it('should install the database', function(done) {
+            utils.install(dbConfig, done);
+        });
+    });
 
-	describe('POST /api/Mock', function() {
-		var doc = {
-			"id": 'one',
-			"someVal": "Ronald McDonald",
+    describe('POST /api/Mock', function() {
+        var doc = {
+            "id": 'one',
+            "someVal": "Ronald McDonald",
             "favColor": "yello"
-		};
+        };
 
-		before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
+        before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
 
         it ('should have a location', function() {
             this.resp.should.have.header('Location');
@@ -105,12 +104,12 @@ describe('Creating model', function(){
         it ('should have added a field', function() {
             this.body.should.have.property('favColor', 'yello');
         });
-	});
+    });
 
-	describe('GET /api/Mock/one', function() {
-		before(utils.requestUrl(testPort, '/api/Mock/one'));
+    describe('GET /api/Mock/one', function() {
+        before(utils.requestUrl(testPort, '/api/Mock/one'));
 
-		it ('should return status 200', function() {
+        it ('should return status 200', function() {
             this.resp.should.have.status(200);
         });
 
@@ -133,7 +132,7 @@ describe('Creating model', function(){
         it ('should respect the default values', function() {
             this.body.should.have.property('name', 'name');
         });
-	});
+    });
 
     // This next section is dependent on the server having gives
     // us a new location with the previous request.
@@ -144,7 +143,7 @@ describe('Creating model', function(){
             var self = this;
             var opts = {
                 json: {
-                	id: 'two',
+                    id: 'two',
                     name: "Hamburgler, The",
                     favColor: "Bun"
                 },
@@ -165,7 +164,7 @@ describe('Creating model', function(){
                         next(err);
                     });
                 }], done);
-        }
+        };
 
 
         before(beforeFn);
@@ -190,28 +189,27 @@ describe('Creating model', function(){
 });
 
 describe('Reading model', function() {
-	var db = new Couch(dbConfig);
+    var db = new Couch(dbConfig);
 
     before(cleanup.bind(db));
     after(cleanup.bind(db));
 
-	describe('Install DB', function() {
+    describe('Install DB', function() {
 
-	    it('should install the database', function(done) {
-	    	utils.install(dbConfig, done);
-	    });
-	});
+        it('should install the database', function(done) {
+            utils.install(dbConfig, done);
+        });
+    });
 
-	describe('POST /api/Mock', function() {
-		var doc = {
-			"id": 'one',
-			"someVal": "Ronald McDonald",
+    describe('POST /api/Mock', function() {
+        var doc = {
+            "id": 'one',
+            "someVal": "Ronald McDonald",
             "favColor": "yello"
-		};
-		before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
+        };
+        before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
 
-		// This is for the new location the server told us to go.
-        var newLocation = '';
+        // This is for the new location the server told us to go.
         it ('should have a location', function() {
             this.resp.should.have.header('Location');
         });
@@ -227,12 +225,12 @@ describe('Reading model', function() {
         it ('should have a body', function() {
             should.exist(this.body);
         });
-	});
+    });
 
-	describe('GET /api/Mock/one', function() {
-		before(utils.requestUrl(testPort, '/api/Mock/one'));
+    describe('GET /api/Mock/one', function() {
+        before(utils.requestUrl(testPort, '/api/Mock/one'));
 
-		it ('should return status 200', function() {
+        it ('should return status 200', function() {
             this.resp.should.have.status(200);
         });
 
@@ -255,31 +253,31 @@ describe('Reading model', function() {
         it ('should respect the default values', function() {
             this.body.should.have.property('name', 'name');
         });
-	});
+    });
 
 });
 
 describe('Updating model', function() {
-	var db = new Couch(dbConfig);
+    var db = new Couch(dbConfig);
     before(cleanup.bind(db));
     after(cleanup.bind(db));
 
-	describe('Install DB', function() {
+    describe('Install DB', function() {
 
-	    it('should install the database', function(done) {
-	    	utils.install(dbConfig, done);
-	    });
-	});
+        it('should install the database', function(done) {
+            utils.install(dbConfig, done);
+        });
+    });
 
-	describe('POST /api/Mock', function() {
-		var doc = {
-			"id": 'one',
-			"someVal": "Ronald McDonald",
+    describe('POST /api/Mock', function() {
+        var doc = {
+            "id": 'one',
+            "someVal": "Ronald McDonald",
             "favColor": "yello"
-		};
-		before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
+        };
+        before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
 
-		// This is for the new location the server told us to go.
+        // This is for the new location the server told us to go.
         it ('should have a location', function() {
             this.resp.should.have.header('Location');
         });
@@ -295,12 +293,12 @@ describe('Updating model', function() {
         it ('should have a body', function() {
             should.exist(this.body);
         });
-	});
+    });
 
-	describe('GET /api/Mock/one', function() {
-		before(utils.requestUrl(testPort, '/api/Mock/one'));
+    describe('GET /api/Mock/one', function() {
+        before(utils.requestUrl(testPort, '/api/Mock/one'));
 
-		it ('should return status 200', function() {
+        it ('should return status 200', function() {
             this.resp.should.have.status(200);
         });
 
@@ -323,36 +321,36 @@ describe('Updating model', function() {
         it ('should respect the default values', function() {
             this.body.should.have.property('name', 'name');
         });
-	});
+    });
 
-	describe('PUT /api/Mock/one', function() {
-	    var data = {
-	    	id: "one",
-	        someVal: "Emily Mortimer",
-	        favColor: "magenta"
-	    }
-	    before(utils.requestUrl(testPort, '/api/Mock/one', 'PUT', data));
+    describe('PUT /api/Mock/one', function() {
+        var data = {
+            id: "one",
+            someVal: "Emily Mortimer",
+            favColor: "magenta"
+        };
+        before(utils.requestUrl(testPort, '/api/Mock/one', 'PUT', data));
 
-	    it ('should return status 201', function() {
-	        this.resp.should.have.status(201);
-	    });
+        it ('should return status 201', function() {
+            this.resp.should.have.status(201);
+        });
 
-	    it('response should be json', function() {
-	        this.resp.should.be.json;
-	    });
+        it('response should be json', function() {
+            this.resp.should.be.json;
+        });
 
-	    it ('should have a body', function() {
-	        should.exist(this.body);
-	    });
+        it ('should have a body', function() {
+            should.exist(this.body);
+        });
 
-	    it ('should return the changed object', function() {
-	        this.body.should.have.property('someVal', 'Emily Mortimer');
-	    });
+        it ('should return the changed object', function() {
+            this.body.should.have.property('someVal', 'Emily Mortimer');
+        });
 
-	    it ('should have added a field', function() {
-	        this.body.should.have.property('favColor', 'magenta');
-	    });
-	});
+        it ('should have added a field', function() {
+            this.body.should.have.property('favColor', 'magenta');
+        });
+    });
 
     describe('GET /api/Mock/one', function() {
         before(utils.requestUrl(testPort, '/api/Mock/one'));
@@ -377,7 +375,7 @@ describe('Updating model', function() {
             this.body.should.have.property('someVal', 'Emily Mortimer');
         });
     });
-    
+
     describe('GET /api/Mock', function() {
         before(utils.requestUrl(testPort, '/api/Mock'));
         it ('should return status 200', function() {
@@ -391,7 +389,7 @@ describe('Updating model', function() {
         it ('should have a body', function() {
             should.exist(this.body);
         });
-        
+
         it ('should have added a field', function() {
             this.body[0].should.have.property('favColor', 'magenta');
         });
@@ -405,27 +403,25 @@ describe('Updating model', function() {
 
 
 describe('Deleting model', function() {
-	var db = new Couch(dbConfig);
+    var db = new Couch(dbConfig);
     before(cleanup.bind(db));
     after(cleanup.bind(db));
 
-	describe('Install DB', function() {
+    describe('Install DB', function() {
 
-	    it('should install the database', function(done) {
-	    	utils.install(dbConfig, done);
-	    });
-	});
+        it('should install the database', function(done) {
+            utils.install(dbConfig, done);
+        });
+    });
 
-	describe('POST /api/Mock', function() {
-		var doc = {
-			"id": 'one',
-			"someVal": "Ronald McDonald", // was "Emily Baker"
+    describe('POST /api/Mock', function() {
+        var doc = {
+            "id": 'one',
+            "someVal": "Ronald McDonald", // was "Emily Baker"
             "favColor": "yello" // new field
-		};
-		before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
+        };
+        before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
 
-		// This is for the new location the server told us to go.
-        var newLocation = '';
         it ('should have a location', function() {
             this.resp.should.have.header('Location');
         });
@@ -441,50 +437,50 @@ describe('Deleting model', function() {
         it ('should have a body', function() {
             should.exist(this.body);
         });
-	});
+    });
 
-	describe('DELETE /api/Mock/one', function() {
-		before(utils.requestUrl(testPort, '/api/Mock/one', 'DELETE'));
+    describe('DELETE /api/Mock/one', function() {
+        before(utils.requestUrl(testPort, '/api/Mock/one', 'DELETE'));
 
-	    it ('should return status 204', function() {
-	        this.resp.should.have.status(204);
-	    });
+        it ('should return status 204', function() {
+            this.resp.should.have.status(204);
+        });
 
-	    describe('GET /api/Mock/one', function() {
+        describe('GET /api/Mock/one', function() {
 
-	        before(utils.requestUrl(testPort, '/api/Mock/one'));
+            before(utils.requestUrl(testPort, '/api/Mock/one'));
 
-	        it ('should return status 404', function() {
+            it ('should return status 404', function() {
 
-	            this.resp.should.have.status(404);
+                this.resp.should.have.status(404);
 
-	        });
-	    });
+            });
+        });
 
-	    describe('GET /api/Mock', function() {
-	        before(utils.requestUrl(testPort, '/api/Mock'));
-	        it ('should return status 200', function() {
-	            this.resp.should.have.status(200);
-	        });
+        describe('GET /api/Mock', function() {
+            before(utils.requestUrl(testPort, '/api/Mock'));
+            it ('should return status 200', function() {
+                this.resp.should.have.status(200);
+            });
 
-	        it('response should be json', function() {
-	            this.resp.should.be.json;
-	        });
+            it('response should be json', function() {
+                this.resp.should.be.json;
+            });
 
-	        it ('should have a body', function() {
-	            should.exist(this.body);
-	        });
-	        
-	        it ('should not have a record with id one', function() {
-	        	var record = false;
-	        	_.each(this.body, function(val) {
-	        		if(val.id == 'one') {
-	        			record = true;
-	        		}
-	        	});
-	            record.should.equal(false);
-	        });
-	    });
-	});
+            it ('should have a body', function() {
+                should.exist(this.body);
+            });
+
+            it ('should not have a record with id one', function() {
+                var record = false;
+                _.each(this.body, function(val) {
+                    if(val.id == 'one') {
+                        record = true;
+                    }
+                });
+                record.should.equal(false);
+            });
+        });
+    });
 
 });

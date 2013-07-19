@@ -1,16 +1,8 @@
 // A quick test implementation to get something happening on the screen.
 // a simple in-memory data adapter for tests.
-var request = require('request');
-var url = require('url');
-var _ = require('underscore');
-var Couch = require('../lib/couch.js');
+var _      = require('underscore');
+var Couch  = require('../lib/couch.js');
 var crypto = require('crypto');
-var Errors = {
-    NOT_FOUND: {
-        status: 404,
-        message: "There is no such page"
-    }
-};
 
 function promisify(fn) {
     var dfr = new $.Deferred();
@@ -44,19 +36,21 @@ _.extend(this, {
         var dfr = new $.Deferred();
 
         this.couch.get(getUrl(model, id), function(err, doc) {
-            if (err) return dfr.reject(404);
+            if (err) { return dfr.reject(404); }
             dfr.resolve(doc);
         });
 
         return dfr.promise();
     },
     createModel: function(model, data) {
-        if(data.id == undefined)
+        if (data.id === undefined) {
             data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
+        }
 
         var _doc = {
             _id: getUrl(model) + '/' + data.id
-        }
+        };
+
         _.extend(_doc, data);
 
         return promisify(this.couch.post, _doc);
@@ -66,11 +60,11 @@ _.extend(this, {
 
         var _doc = {
             _id : getUrl(model, id)
-        }
+        };
         _.extend(_doc, data);
 
         this.couch.put(_doc, function(err, doc) {
-            if (err) return dfr.reject(404);
+            if (err) { return dfr.reject(404); }
             dfr.resolve({'_rev': doc.rev});
         });
 
@@ -81,10 +75,10 @@ _.extend(this, {
         var that = this;
 
         this.couch.get(getUrl(model, id), function(err, doc) {
-            if (err) return dfr.reject(404);
+            if (err) { return dfr.reject(404); }
             that.couch.del(doc, function(err, res) {
                 err ? dfr.reject(404) : dfr.resolve({});
-            })
+            });
         });
         return dfr.promise();
     },
@@ -92,7 +86,7 @@ _.extend(this, {
         var dfr = new $.Deferred();
         var url = '_design/backbone/_rewrite' + getUrl(col);
         this.couch.view(url, {}, function(err, res) {
-            if (err) return dfr.reject(404);
+            if (err) { return dfr.reject(404); }
             var data = [];
             _.each(res.rows, function(val) {
                 data.push(val.doc);
