@@ -62,12 +62,19 @@ _.extend(this, {
         return promisify(this.couch.post, _doc);
     },
     updateModel: function (model, id, data) {
+        var dfr = new $.Deferred();
+
         var _doc = {
             _id : getUrl(model, id)
         }
         _.extend(_doc, data);
 
-        return promisify(this.couch.put, _doc);
+        this.couch.put(_doc, function(err, doc) {
+            if (err) return dfr.reject(404);
+            dfr.resolve({'_rev': doc.rev});
+        });
+
+        return dfr.promise();
     },
     deleteModel: function(model, id) {
         var dfr = new $.Deferred();

@@ -1,5 +1,6 @@
 var should = require('should');
 var request = require('request');
+var async    = require('async');
 var utils = require('./utils');
 var Couch = require('../lib/couch.js');
 var _ = require('underscore');
@@ -58,11 +59,141 @@ describe('install', function() {
 
 });
 
-describe('Reading model', function() {
-		var db = new Couch(dbConfig);
+describe('Creating model', function(){
 
-	    before(cleanup.bind(db));
-	    after(cleanup.bind(db));
+	var db = new Couch(dbConfig);
+
+    before(cleanup.bind(db));
+    after(cleanup.bind(db));
+
+	describe('Install DB', function() {
+
+	    it('should install the database', function(done) {
+	    	utils.install(dbConfig, done);
+	    });
+	});
+
+	describe('POST /api/Mock', function() {
+		var doc = {
+			"id": 'one',
+			"someVal": "Ronald McDonald",
+            "favColor": "yello"
+		};
+
+		before(utils.requestUrl(testPort, '/api/Mock', 'POST', doc));
+
+        it ('should have a location', function() {
+            this.resp.should.have.header('Location');
+        });
+
+        it ('should return status 303', function() {
+            this.resp.should.have.status(303);
+        });
+
+        it('response should be json', function() {
+            this.resp.should.be.json;
+        });
+
+        it ('should have a body', function() {
+            should.exist(this.body);
+        });
+
+        it ('should have defaulted the fields correctly', function() {
+            this.body.should.have.property('name', 'name');
+        });
+
+        it ('should have added a field', function() {
+            this.body.should.have.property('favColor', 'yello');
+        });
+	});
+
+	describe('GET /api/Mock/one', function() {
+		before(utils.requestUrl(testPort, '/api/Mock/one'));
+
+		it ('should return status 200', function() {
+            this.resp.should.have.status(200);
+        });
+
+        it('response should be json', function() {
+            this.resp.should.be.json;
+        });
+
+        it ('should have a body', function() {
+            should.exist(this.body);
+        });
+
+        it('should have the correct id', function() {
+            this.body.should.have.property('id', 'one');
+        });
+
+        it('should have the correct someVal', function() {
+            this.body.should.have.property('someVal', 'Ronald McDonald');
+        });
+
+        it ('should respect the default values', function() {
+            this.body.should.have.property('name', 'name');
+        });
+	});
+
+    // This next section is dependent on the server having gives
+    // us a new location with the previous request.
+    describe("Follow Location Header", function() {
+        var testUrl = 'http://localhost:'+ testPort;
+
+        var beforeFn = function(done) {
+            var self = this;
+            var opts = {
+                json: {
+                	id: 'two',
+                    name: "Hamburgler, The",
+                    favColor: "Bun"
+                },
+                method: 'POST'
+            };
+            async.waterfall([
+                function(next) {
+                    request(testUrl + '/api/Mock', opts, function(err, resp, body) {
+                        next(null, resp.body.id, resp.headers.location);
+                    });
+                },
+                function (id, locat, next) {
+                    self.newId = id;
+                    self.newLocation = locat;
+                    request(testUrl + locat, {json: true}, function(err, resp, body) {
+                        self.resp = resp;
+                        self.body = body;
+                        next(err);
+                    });
+                }], done);
+        }
+
+
+        before(beforeFn);
+
+        it ('should return status 200', function() {
+            this.resp.should.have.status(200);
+        });
+
+        it('response should be json', function() {
+            this.resp.should.be.json;
+        });
+
+        it ('should have a body', function() {
+            should.exist(this.body);
+        });
+
+        it('should have the correct id', function() {
+            this.body.should.have.property('id', this.newId);
+        });
+
+    });
+});
+
+describe('Reading model', function() {
+	var db = new Couch(dbConfig);
+
+    before(cleanup.bind(db));
+    after(cleanup.bind(db));
 
 	describe('Install DB', function() {
 
@@ -246,6 +377,7 @@ describe('Updating model', function() {
             this.body.should.have.property('someVal', 'Emily Mortimer');
         });
     });
+    
     describe('GET /api/Mock', function() {
         before(utils.requestUrl(testPort, '/api/Mock'));
         it ('should return status 200', function() {
@@ -272,7 +404,7 @@ describe('Updating model', function() {
 });
 
 
-describe('Delete model', function() {
+describe('Deleting model', function() {
 	var db = new Couch(dbConfig);
     before(cleanup.bind(db));
     after(cleanup.bind(db));
