@@ -43,6 +43,7 @@ _.extend(this, {
         return dfr.promise();
     },
     createModel: function(model, data) {
+        var dfr = new $.Deferred();
         if (data.id === undefined) {
             data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
         }
@@ -53,7 +54,13 @@ _.extend(this, {
 
         _.extend(_doc, data);
 
-        return promisify(this.couch.post, _doc);
+        this.couch.post(_doc, function(err, doc) {
+            doc.id = doc.id.replace('/api/'+ model +'/', '');
+            if (err) { return dfr.reject(404); }
+            dfr.resolve({'_rev': doc.rev, id: doc.id});
+        });
+
+        return dfr.promise();
     },
     updateModel: function (model, id, data) {
         var dfr = new $.Deferred();

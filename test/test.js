@@ -143,7 +143,6 @@ describe('Creating model', function(){
             var self = this;
             var opts = {
                 json: {
-                    id: 'two',
                     name: "Hamburgler, The",
                     favColor: "Bun"
                 },
