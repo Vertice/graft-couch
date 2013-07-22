@@ -1,6 +1,8 @@
 // A quick test implementation to get something happening on the screen.
 // a simple in-memory data adapter for tests.
 var _      = require('underscore');
+var async  = require('async');
+var glob   = require('glob');
 var Couch  = require('../lib/couch.js');
 var crypto = require('crypto');
 
@@ -107,10 +109,33 @@ _.extend(this, {
 this.addInitializer(function(opts) {
     // console.log("addInitializer : ", opts);
     var opts = opts || {};
-
-    this.couch = new Couch({
+    var that = this;
+    var couch = this.couch = new Couch({
         pathname: opts.db || '/graft'
     });
+
+    var files = glob.sync(__dirname + '/../design-docs/*.json');
+
+    function checkExists(next) {
+        couch.dbExists(function(err, body) {
+            if (err && (err.statusCode === 404)) {
+                debug('Database %s does not exist. Creating', couch.name);
+                next(null);
+            } else {
+                next('database exists');
+            }
+        });
+    }
+
+    async.series([
+        checkExists,
+        couch.dbPut.bind(couch),
+        couch.putDesignDocs.bind(couch, files)
+    ], function(err, res) {
+        debug('Created Database, Added View');
+        that.trigger('ready');
+    });
+
 });
 
 this.addInitializer(function(opts) {

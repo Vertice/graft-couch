@@ -1,38 +1,37 @@
-var should = require('should');
-var request = require('request');
-var async    = require('async');
-var utils = require('./utils');
-var Couch = require('../lib/couch.js');
-var _ = require('underscore');
-var testPort = 12500;
-var dbName = 'ws_mocks';
-var dbConfig = {pathname: dbName};
+var should       = require('should');
+var request      = require('request');
+var async        = require('async');
+var utils        = require('./utils');
+var Couch        = require('../lib/couch.js');
+var _            = require('underscore');
+var testPort     = 12500;
+var dbName       = 'ws_mocks';
+var dbConfig     = {pathname: dbName};
 var serverConfig = {db: dbName, port: testPort};
-
-var Graft = require('graftjs/server');
-require('graftjs/middleware/REST.graft.js');
-require('../middleware/CouchDB.graft.js');
-Graft.load(__dirname);
-Graft.start(serverConfig);
-
+var Graft        = require('graftjs/server');
 
 function cleanup(done) {
     this.dbDel(function(err) {
         done();
     });
 }
+require('graftjs/middleware/REST.graft.js');
+require('../middleware/CouchDB.graft.js');
 
 // Install and destroy database.
 // -----------------------------
 describe('install', function() {
     var db = new Couch(dbConfig);
 
-    before(cleanup.bind(db));
+    before(function(done) {
+        db.dbDel(function(err) {
+            Graft.load(__dirname);
+            Graft.start(serverConfig);
+            Graft.Middleware.CouchDB.on('ready', done);
+        });
+    });
     after(cleanup.bind(db));
 
-    it('should install the database', function(done) {
-        utils.install(dbConfig, done);
-    });
 
     it('check that database exists', function(done) {
         db.get('_design/backbone', function(err, doc) {
