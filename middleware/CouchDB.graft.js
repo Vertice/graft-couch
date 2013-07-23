@@ -83,47 +83,50 @@ _.extend(this, {
             dfr.resolve(data);
         });
         return dfr.promise();
-    }
-});
+    },
+    setupData: function(opts) {
 
-this.addInitializer(function(opts) {
-    // console.log("addInitializer : ", opts);
-    var opts = opts || {};
-    var that = this;
-    var couch = this.couch = new Couch({
-        pathname: opts.db || '/graft'
-    });
+        Graft.reqres.setHandler('model:read', this.readModel, this);
+        Graft.reqres.setHandler('model:create', this.createModel, this);
+        Graft.reqres.setHandler('model:update', this.updateModel, this);
+        Graft.reqres.setHandler('model:delete', this.deleteModel, this);
+        Graft.reqres.setHandler('collection:read', this.readCollection, this);
 
-    var files = glob.sync(__dirname + '/../design-docs/*.json');
-
-    function checkExists(next) {
-        couch.dbExists(function(err, body) {
-            if (err && (err.statusCode === 404)) {
-                debug('Database %s does not exist. Creating', couch.name);
-                next(null);
-            } else {
-                next('database exists');
-            }
+        // console.log("addInitializer : ", opts);
+        var opts = opts || {};
+        var that = this;
+        var couch = this.couch = new Couch({
+            pathname: opts.db || '/graft'
         });
+
+        var files = glob.sync(__dirname + '/../design-docs/*.json');
+
+        function checkExists(next) {
+            couch.dbExists(function(err, body) {
+                if (err && (err.statusCode === 404)) {
+                    debug('Database %s does not exist. Creating', couch.name);
+                    next(null);
+                } else {
+                    next('database exists');
+                }
+            });
+        }
+
+        async.series([
+            checkExists,
+            couch.dbPut.bind(couch),
+            couch.putDesignDocs.bind(couch, files)
+        ], function(err, res) {
+            debug('Created Database, Added View');
+            that.trigger('ready');
+        });
+
     }
-
-    async.series([
-        checkExists,
-        couch.dbPut.bind(couch),
-        couch.putDesignDocs.bind(couch, files)
-    ], function(err, res) {
-        debug('Created Database, Added View');
-        that.trigger('ready');
-    });
-
 });
+
 
 this.addInitializer(function(opts) {
     // console.log("addInitializer adding handlers");
     debug("adding handler for reading models");
-    Graft.reqres.setHandler('model:read', this.readModel, this);
-    Graft.reqres.setHandler('model:create', this.createModel, this);
-    Graft.reqres.setHandler('model:update', this.updateModel, this);
-    Graft.reqres.setHandler('model:delete', this.deleteModel, this);
-    Graft.reqres.setHandler('collection:read', this.readCollection, this);
+    Graft.commands.setHandler('data:setup', this.setupData, this);
 });
