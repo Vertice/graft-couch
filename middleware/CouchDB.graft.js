@@ -6,26 +6,6 @@ var glob   = require('glob');
 var Couch  = require('../lib/couch.js');
 var crypto = require('crypto');
 
-function promisify(fn) {
-    var dfr = new $.Deferred();
-
-    function cb(err) {
-        if (err) { return dfr.resolve(err); }
-
-        var args = _.toArray(arguments);
-        args.shift();
-        dfr.resolve.apply(this, args);
-    }
-
-    var args = _.toArray(arguments);
-    var fn = args.shift();
-    args.push(cb);
-
-    fn.apply(this, args); 
-
-    return dfr.promise();
-}
-
 
 function getUrl(model, id) {
     if (!id) { return '/api/' + model; }
