@@ -15,7 +15,7 @@ function getUrl(model, id) {
 
 _.extend(this, {
     readModel: function(model, id) {
-        var dfr = new $.Deferred();
+        var dfr = new _.Deferred();
 
         this.couch.get(getUrl(model, id), function(err, doc) {
             if (err) { return dfr.reject(404); }
@@ -25,7 +25,7 @@ _.extend(this, {
         return dfr.promise();
     },
     createModel: function(model, data) {
-        var dfr = new $.Deferred();
+        var dfr = new _.Deferred();
         if (data.id === undefined) {
             data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
         }
@@ -45,7 +45,7 @@ _.extend(this, {
         return dfr.promise();
     },
     updateModel: function (model, id, data) {
-        var dfr = new $.Deferred();
+        var dfr = new _.Deferred();
 
         var _doc = {
             _id : getUrl(model, id)
@@ -60,7 +60,7 @@ _.extend(this, {
         return dfr.promise();
     },
     deleteModel: function(model, id) {
-        var dfr = new $.Deferred();
+        var dfr = new _.Deferred();
         var that = this;
 
         this.couch.get(getUrl(model, id), function(err, doc) {
@@ -72,7 +72,7 @@ _.extend(this, {
         return dfr.promise();
     },
     readCollection: function(col) {
-        var dfr = new $.Deferred();
+        var dfr = new _.Deferred();
         var url = '_design/backbone/_rewrite' + getUrl(col);
         this.couch.view(url, {}, function(err, res) {
             if (err) { return dfr.reject(404); }
