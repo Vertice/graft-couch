@@ -15,8 +15,9 @@ function cleanup(done) {
         done();
     });
 }
+
 require('graftjs/middleware/REST.graft.js');
-require('../middleware/Data.CouchDB.graft.js');
+require('../data/CouchDB.graft.js');
 
 // Install and destroy database.
 // -----------------------------
@@ -27,7 +28,7 @@ describe('install', function() {
         db.dbDel(function(err) {
             Graft.load(__dirname);
             Graft.start(serverConfig);
-            Graft.Middleware.Data.CouchDB.on('ready', done);
+            Graft.Data.CouchDB.on('ready', done);
         });
     });
     after(cleanup.bind(db));
