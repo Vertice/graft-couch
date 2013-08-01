@@ -25,7 +25,7 @@
     "backbone.marionette": "~1.0.4"
   },
   "devDependencies": {
-    "graftjs": "git+ssh://git@github.com:ONCHoldings/graft.js.git#master",
+    "graftjs": "git://github.com/ONCHoldings/graft.js.git#master",
     "mocha": "~1.12.0",
     "should": "~1.2.2",
     "request": "~2.21.0",
