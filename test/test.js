@@ -16,7 +16,7 @@ function cleanup(done) {
     });
 }
 
-require('graftjs/middleware/REST.graft.js');
+require('graftjs/io/Rest.graft.js');
 require('../data/CouchDB.graft.js');
 
 // Install and destroy database.
