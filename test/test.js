@@ -15,16 +15,18 @@ function cleanup(done) {
         done();
     });
 }
-
-require('graftjs/io/Rest.graft.js');
-require('../data/CouchDB.graft.js');
-
 // Install and destroy database.
 // -----------------------------
 describe('install', function() {
     var db = new Couch(dbConfig);
 
     before(function(done) {
+        Graft.directory(__dirname);
+
+        require('graftjs/io/Rest.graft.js');
+        require('../server');
+
+
         db.dbDel(function(err) {
             Graft.load(__dirname);
             Graft.start(serverConfig);

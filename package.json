@@ -2,7 +2,7 @@
   "name": "graft-couch",
   "version": "0.0.1",
   "description": "couchdb data access layer for graft.js",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "mocha -R spec"
   },
