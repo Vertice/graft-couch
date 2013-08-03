@@ -2,7 +2,7 @@ var should       = require('should');
 var request      = require('request');
 var async        = require('async');
 var utils        = require('./utils');
-var Couch        = require('../lib/couch.js');
+var Couch        = require('../lib/couch');
 var _            = require('underscore');
 var testPort     = 12500;
 var dbName       = 'ws_mocks';
@@ -23,14 +23,14 @@ describe('install', function() {
     before(function(done) {
         Graft.directory(__dirname);
 
-        require('graftjs/io/Rest.graft.js');
+        require('graftjs/io/rest');
         require('../server');
 
 
         db.dbDel(function(err) {
             Graft.load(__dirname);
             Graft.start(serverConfig);
-            Graft.Data.CouchDB.on('ready', done);
+            Graft.Data.Couch.on('ready', done);
         });
     });
     after(cleanup.bind(db));

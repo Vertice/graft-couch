@@ -3,7 +3,7 @@
 var _      = require('underscore');
 var async  = require('async');
 var glob   = require('glob');
-var Couch  = require('../lib/couch.js');
+var Couch  = require('../lib/couch');
 var crypto = require('crypto');
 
 
