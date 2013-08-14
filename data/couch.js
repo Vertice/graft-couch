@@ -86,11 +86,11 @@ _.extend(this, {
     },
     setupData: function(opts) {
 
-        Graft.reqres.setHandler('model:read', this.readModel, this);
-        Graft.reqres.setHandler('model:create', this.createModel, this);
-        Graft.reqres.setHandler('model:update', this.updateModel, this);
-        Graft.reqres.setHandler('model:delete', this.deleteModel, this);
-        Graft.reqres.setHandler('collection:read', this.readCollection, this);
+        Graft.Data.reqres.setHandler('read', this.readModel, this);
+        Graft.Data.reqres.setHandler('create', this.createModel, this);
+        Graft.Data.reqres.setHandler('update', this.updateModel, this);
+        Graft.Data.reqres.setHandler('delete', this.deleteModel, this);
+        Graft.Data.reqres.setHandler('query', this.readCollection, this);
 
         // console.log("addInitializer : ", opts);
         var opts = opts || {};
@@ -124,9 +124,8 @@ _.extend(this, {
     }
 });
 
-
 this.addInitializer(function(opts) {
     // console.log("addInitializer adding handlers");
     debug("adding handler for reading models");
-    Graft.commands.setHandler('data:setup', this.setupData, this);
+    Graft.Data.commands.setHandler('setup', this.setupData, this);
 });
