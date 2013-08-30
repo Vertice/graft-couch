@@ -14,41 +14,41 @@ function getUrl(model, id) {
 }
 
 _.extend(this, {
-    readModel: function(model, id) {
+    readModel: function(name, model, id) {
         var dfr = new _.Deferred();
 
-        this.couch.get(getUrl(model, id), function(err, doc) {
+        this.couch.get(getUrl(name, id), function(err, doc) {
             if (err) { return dfr.reject(404); }
             dfr.resolve(doc);
         });
 
         return dfr.promise();
     },
-    createModel: function(model, data) {
+    createModel: function(name, model, data) {
         var dfr = new _.Deferred();
         if (data.id === undefined) {
             data.id = crypto.createHash('md5').update(new Date().getTime().toString()).digest("hex");
         }
 
         var _doc = {
-            _id: getUrl(model) + '/' + data.id
+            _id: getUrl(name) + '/' + data.id
         };
 
         _.extend(_doc, data);
 
         this.couch.post(_doc, function(err, doc) {
-            doc.id = doc.id.replace('/api/'+ model +'/', '');
+            doc.id = doc.id.replace('/api/'+ name +'/', '');
             if (err) { return dfr.reject(404); }
             dfr.resolve({'_rev': doc.rev, id: doc.id});
         });
 
         return dfr.promise();
     },
-    updateModel: function (model, id, data) {
+    updateModel: function (name, model, id, data) {
         var dfr = new _.Deferred();
 
         var _doc = {
-            _id : getUrl(model, id)
+            _id : getUrl(name, id)
         };
         _.extend(_doc, data);
 
@@ -59,11 +59,11 @@ _.extend(this, {
 
         return dfr.promise();
     },
-    deleteModel: function(model, id) {
+    deleteModel: function(name, model, id) {
         var dfr = new _.Deferred();
         var that = this;
 
-        this.couch.get(getUrl(model, id), function(err, doc) {
+        this.couch.get(getUrl(name, id), function(err, doc) {
             if (err) { return dfr.reject(404); }
             that.couch.del(doc, function(err, res) {
                 err ? dfr.reject(404) : dfr.resolve({});
@@ -71,9 +71,9 @@ _.extend(this, {
         });
         return dfr.promise();
     },
-    readCollection: function(col) {
+    readCollection: function(name, col) {
         var dfr = new _.Deferred();
-        var url = '_design/backbone/_rewrite' + getUrl(col);
+        var url = '_design/backbone/_rewrite' + getUrl(name);
         this.couch.view(url, {}, function(err, res) {
             if (err) { return dfr.reject(404); }
             var data = [];
@@ -91,7 +91,9 @@ _.extend(this, {
         Graft.Data.reqres.setHandler('update', this.updateModel, this);
         Graft.Data.reqres.setHandler('delete', this.deleteModel, this);
         Graft.Data.reqres.setHandler('query', this.readCollection, this);
-
+        this.installDatabase(opts);
+    },
+    installDatabase: function(opts) {
         // console.log("addInitializer : ", opts);
         var opts = opts || {};
         var that = this;
